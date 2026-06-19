@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ListenUp — JNTUH English Platform</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f0;min-height:100vh;color:#1a1a1a}
+.app{max-width:860px;margin:0 auto;padding:1.5rem 1rem}
+.header{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header h1{font-size:20px;font-weight:500;color:#1a1a1a}
+.header p{font-size:13px;color:#666;margin-top:2px}
+.pts-badge{background:#EEEDFE;color:#3C3489;font-size:13px;font-weight:500;padding:4px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
+.screen{display:none}.screen.active{display:block}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card h2{font-size:16px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.card p{font-size:14px;color:#555;line-height:1.6}
+label{font-size:13px;color:#555;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:9px 12px;font-size:14px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;margin-bottom:12px;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:#534AB7}
+input[type=range]{padding:0;border:none;margin-bottom:0;accent-color:#534AB7}
+input[type=file]{padding:8px}
+.btn{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:1px solid #d0d0c8;background:#fff;color:#1a1a1a;transition:background 0.15s}
+.btn:hover{background:#f5f5f0}
+.btn-primary{background:#534AB7;color:#fff;border-color:#534AB7}.btn-primary:hover{background:#3C3489;border-color:#3C3489}
+.btn-success{background:#0F6E56;color:#fff;border-color:#0F6E56}.btn-success:hover{background:#085041}
+.btn-danger{background:#A32D2D;color:#fff;border-color:#A32D2D}.btn-danger:hover{background:#791F1F}
+.btn-sm{padding:5px 12px;font-size:13px}
+.btn-full{width:100%;padding:10px;margin-top:4px}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.err{font-size:13px;color:#A32D2D;margin-bottom:8px;padding:8px 12px;background:#FCEBEB;border-radius:6px;display:none}
+.ok{font-size:13px;color:#0F6E56;margin-bottom:8px;padding:8px 12px;background:#E1F5EE;border-radius:6px;display:none}
+.tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:8px;font-size:14px;cursor:pointer;border:1px solid #e5e5e0;background:#fff;color:#666}
+.tab.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.link-btn{background:none;border:none;color:#534AB7;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;margin-bottom:8px;display:inline-block}
+.progress-wrap{margin-bottom:1.25rem}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:#666;margin-bottom:5px}
+.progress-bar{height:6px;background:#e5e5e0;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:#534AB7;border-radius:4px;transition:width 0.4s}
+.quiz-overlay{background:#EEEDFE;border:1px solid #AFA9EC;border-radius:12px;padding:1.25rem;margin-top:1rem}
+.quiz-overlay h3{font-size:15px;font-weight:500;color:#3C3489;margin-bottom:4px}
+.quiz-overlay .sub{font-size:13px;color:#534AB7;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;padding:9px 14px;margin-bottom:6px;border-radius:8px;border:1px solid #AFA9EC;background:#fff;color:#1a1a1a;font-size:14px;cursor:pointer;transition:background 0.15s}
+.opt:hover{background:#EEEDFE}.opt.correct{background:#E1F5EE;border-color:#0F6E56;color:#085041}.opt.wrong{background:#FAECE7;border-color:#993C1D;color:#4A1B0C}
+.opt:disabled{cursor:not-allowed}
+.speak-box{background:#E1F5EE;border:1px solid #5DCAA5;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.speak-box h3{font-size:15px;font-weight:500;color:#085041;margin-bottom:4px}
+.speak-box .sub{font-size:13px;color:#0F6E56;margin-bottom:0}
+.rec-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rec-btn{padding:9px 18px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;display:flex;align-items:center;gap:6px}
+.rec-btn.start{background:#0F6E56;color:#fff}.rec-btn.stop{background:#993C1D;color:#fff}
+.rec-btn:disabled{opacity:0.5;cursor:not-allowed}
+.timer{font-size:16px;font-weight:500;color:#085041;font-variant-numeric:tabular-nums}
+.ai-box{background:#fff;border:1px solid #e5e5e0;border-radius:8px;padding:1rem;margin-top:1rem}
+.score-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pill{font-size:12px;padding:3px 10px;border-radius:12px;font-weight:500}
+.pill-p{background:#EEEDFE;color:#3C3489}.pill-t{background:#E1F5EE;color:#085041}.pill-a{background:#FAEEDA;color:#633806}
+.spinner{width:16px;height:16px;border:2px solid #e5e5e0;border-top-color:#534AB7;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.badge-box{background:#FAEEDA;border:1px solid #EF9F27;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.badge-icon{font-size:40px;margin-bottom:8px}
+.badge-box h3{font-size:17px;font-weight:500;color:#412402}
+.badge-box p{font-size:13px;color:#633806;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+.stat-card{background:#f5f5f0;border-radius:8px;padding:1rem;text-align:center}
+.stat-card .num{font-size:24px;font-weight:500;color:#1a1a1a}
+.stat-card .lbl{font-size:12px;color:#666;margin-top:2px}
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+table.dt th{text-align:left;padding:8px 10px;font-weight:500;color:#666;border-bottom:1px solid #e5e5e0}
+table.dt td{padding:8px 10px;border-bottom:1px solid #e5e5e0;color:#1a1a1a}
+table.dt tr:last-child td{border-bottom:none}
+.pass-pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.pass-pill.p{background:#E1F5EE;color:#085041}.pass-pill.f{background:#FAECE7;color:#4A1B0C}
+.section-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #e5e5e0;flex-wrap:wrap}
+.section-row:last-child{border-bottom:none}
+.code-tag{background:#EEEDFE;color:#3C3489;font-size:12px;padding:3px 10px;border-radius:12px;font-weight:500;font-family:monospace}
+.audio-sec{background:#f5f5f0;border-radius:8px;padding:1rem;margin:1rem 0}
+.play-btn{width:36px;height:36px;border-radius:50%;background:#534AB7;color:#fff;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.play-btn:hover{background:#3C3489}
+.play-btn:disabled{opacity:0.5;cursor:not-allowed}
+.listen-badge{font-size:12px;color:#534AB7;font-weight:500;margin-top:6px}
+.fb-msg{font-size:13px;font-weight:500;padding:8px 12px;border-radius:8px;margin-top:8px}
+.fb-good{background:#E1F5EE;color:#085041}.fb-bad{background:#FAECE7;color:#4A1B0C}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sp{height:1rem}
+audio{border-radius:8px}
+.qbuilder{background:#f5f5f0;border-radius:8px;padding:1rem;margin-bottom:10px;position:relative}
+.qbuilder .remove-q{position:absolute;top:10px;right:10px}
+.activity-row{padding:12px 0;border-bottom:1px solid #e5e5e0}
+.activity-row:last-child{border-bottom:none}
+.activity-row .at{font-weight:500;font-size:14px}
+.activity-row .am{font-size:12px;color:#666;margin-top:2px}
+.status-pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.status-pill.live{background:#E1F5EE;color:#085041}
+.status-pill.off{background:#f1efe8;color:#5f5e5a}
+.gate-locked{background:#FAEEDA;border:1px solid #EF9F27;border-radius:8px;padding:8px 12px;font-size:12px;color:#633806;margin-top:8px}
+.replay-note{font-size:12px;color:#666;margin-top:6px}
+@media(max-width:600px){.header{flex-direction:column;align-items:flex-start}.tabs{flex-wrap:wrap}.stats-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div>
+    <h1>ListenUp — JNTUH</h1>
+    <p id="hdr-sub">Gamified English listening platform</p>
+  </div>
+  <div class="row">
+    <span class="pts-badge" id="pts-display" style="display:none">&#9733; <span id="pts-val">0</span> pts</span>
+    <button class="btn btn-sm" id="logout-btn" style="display:none" onclick="logout()">Sign out</button>
+  </div>
+</div>
+
+<div class="screen active" id="s-login">
+  <div style="max-width:420px;margin:0 auto">
+    <div class="card">
+      <h2 id="login-title">Welcome to ListenUp</h2>
+      <p style="margin-bottom:1rem" id="login-sub">Sign in or create your account to begin</p>
+      <div class="tabs">
+        <div class="tab active" onclick="setTab('login')">Sign in</div>
+        <div class="tab" onclick="setTab('register')">Register</div>
+        <div class="tab" onclick="setTab('teacher')">Teacher</div>
+      </div>
+
+      <div id="pane-login">
+        <label>Roll number</label>
+        <input id="li-roll" placeholder="e.g. 21A91A0501">
+        <label>Password</label>
+        <input id="li-pass" type="password" placeholder="Your password">
+        <div class="err" id="li-err"></div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Sign in</button>
+        <button class="link-btn" onclick="setTab('forgot')" style="margin-top:10px">Forgot password?</button>
+      </div>
+
+      <div id="pane-forgot" style="display:none">
+        <p style="font-size:13px;color:#666;margin-bottom:1rem">Enter your roll number and the section code your teacher gave you to reset your password.</p>
+        <label>Roll number</label>
+        <input id="fp-roll" placeholder="e.g. 21A91A0501">
+        <label>Section code</label>
+        <input id="fp-code" placeholder="e.g. CSEA2025">
+        <label>New password</label>
+        <input id="fp-pass" type="password" placeholder="Choose a new password">
+        <label>Confirm new password</label>
+        <input id="fp-pass2" type="password" placeholder="Repeat new password">
+        <div class="err" id="fp-err"></div>
+        <div class="ok" id="fp-ok"></div>
+        <button class="btn btn-primary btn-full" onclick="doForgotPassword()">Reset password</button>
+        <button class="link-btn" onclick="setTab('login')" style="margin-top:10px">Back to sign in</button>
+      </div>
+
+      <div id="pane-register" style="display:none">
+        <label>Full name</label>
+        <input id="rg-name" placeholder="Your full name">
+        <label>Roll number</label>
+        <input id="rg-roll" placeholder="e.g. 21A91A0501">
+        <label>Section code <span style="color:#999;font-size:12px">(given by your teacher)</span></label>
+        <input id="rg-code" placeholder="e.g. CSEA2025">
+        <label>Create a password</label>
+        <input id="rg-pass" type="password" placeholder="Choose a password (min 4 characters)">
+        <label>Confirm password</label>
+        <input id="rg-pass2" type="password" placeholder="Repeat your password">
+        <div class="err" id="rg-err"></div>
+        <div class="ok" id="rg-ok"></div>
+        <button class="btn btn-primary btn-full" onclick="doRegister()">Create account</button>
+      </div>
+
+      <div id="pane-teacher" style="display:none">
+        <label>Teacher password</label>
+        <input id="tc-pass" type="password" placeholder="Enter teacher password">
+        <div class="err" id="tc-err"></div>
+        <button class="btn btn-primary btn-full" onclick="doTeacherLogin()">Open dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="s-pick-activity">
+  <div class="card">
+    <h2>Choose an activity</h2>
+    <p>Select a listening activity to begin</p>
+  </div>
+  <div id="activity-pick-list"></div>
+</div>
+
+<div class="screen" id="s-student">
+  <div class="progress-wrap">
+    <div class="progress-label"><span id="prog-label">Listening</span><span id="prog-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="act-content"></div>
+</div>
+
+<div class="screen" id="s-teacher">
+  <div class="tabs">
+    <div class="tab active" onclick="dashTab('results')">Results</div>
+    <div class="tab" onclick="dashTab('sections')">Manage sections</div>
+    <div class="tab" onclick="dashTab('activities')">Manage activities</div>
+  </div>
+
+  <div id="pane-results">
+    <div class="stats-grid" id="dash-stats"></div>
+    <div class="card">
+      <div class="row" style="margin-bottom:1rem;justify-content:space-between;flex-wrap:wrap">
+        <h2>Student results</h2>
+        <button class="btn btn-success btn-sm" onclick="exportCSV()">Export to Excel (CSV)</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="dt">
+          <thead><tr><th>Roll no.</th><th>Name</th><th>Section</th><th>Activity</th><th>Quiz</th><th>Speaking</th><th>Points</th><th>Status</th></tr></thead>
+          <tbody id="res-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-sections" style="display:none">
+    <div class="card">
+      <h2>Add new section</h2>
+      <p style="margin-bottom:1rem">Create a section and share the code with your students.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:140px"><label>Section name</label><input id="sec-name" placeholder="e.g. CSE-A" style="margin-bottom:0"></div>
+        <div style="flex:1;min-width:140px"><label>Access code</label><input id="sec-code" placeholder="e.g. CSEA2025" style="margin-bottom:0"></div>
+        <button class="btn btn-primary" onclick="addSection()">Add section</button>
+      </div>
+      <div class="err" id="sec-err" style="margin-top:10px"></div>
+      <div class="ok" id="sec-ok" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h2>Your sections</h2>
+      <div id="sections-list"><p style="font-size:14px;color:#666">No sections added yet.</p></div>
+    </div>
+  </div>
+
+  <div id="pane-activities" style="display:none">
+    <div class="card">
+      <h2>Add new listening activity</h2>
+      <p style="margin-bottom:1rem">Upload audio, then add quiz checkpoints with the exact time they should appear. The audio pauses automatically at that point. Students can only replay the segment since the previous checkpoint — not the whole clip — when they answer incorrectly.</p>
+
+      <label>Activity title</label>
+      <input id="act-title" placeholder="e.g. How to answer: Tell me about yourself">
+
+      <label>Audio file</label>
+      <input type="file" id="act-audio" accept="audio/*">
+      <p style="font-size:12px;color:#999;margin:-6px 0 12px">MP3, WAV or M4A. Large files may take a moment to upload.</p>
+
+      <label>Speaking prompt</label>
+      <textarea id="act-prompt" rows="2" placeholder="e.g. Summarise the speaker's key advice in your own words"></textarea>
+
+      <p style="font-size:14px;font-weight:500;margin:1rem 0 10px">Quiz checkpoints (in the order they appear in the audio)</p>
+      <div id="qbuilder-list"></div>
+      <button class="btn btn-sm" onclick="addQuestionBuilder()">+ Add question</button>
+
+      <div class="err" id="act-err" style="margin-top:14px"></div>
+      <div class="ok" id="act-ok" style="margin-top:14px"></div>
+      <button class="btn btn-primary" style="margin-top:10px" onclick="saveActivity()">Save activity</button>
+    </div>
+
+    <div class="card">
+      <h2>Your activities</h2>
+      <div id="activities-list"><p style="font-size:14px;color:#666">No activities added yet.</p></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const SB = 'https://xgkqkqkrvywwxlydkgfe.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhna3FrcWtydnl3d3hseWRrZ2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE0NjUsImV4cCI6MjA5NzEwNzQ2NX0.GijNdgkhPJ6uR-jiUFPBK2_PH-ERtNGO8fofr5iqm5w';
+const TPASS = 'jntuh2024';
+
+let user=null,userPts=0,listenCount=0,quizResults=[],qAttempts={};
+let mediaRecorder=null,audioChunks=[],recBlob=null,recTimer=null,recSecs=0;
+let audioEl=null;
+let currentActivity=null;
+let qbCounter=0;
+
+// Gating state
+let sortedCheckpoints=[]; // [{qi, trigger_at}]
+let nextCheckpointIndex=0;
+let gateActive=false;
+let segmentStart=0; // where current listening segment begins (previous checkpoint or 0)
+
+async function sb(path,method,body){
+  method=method||'GET';
+  const h={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+  const r=await fetch(SB+path,{method:method,headers:h,body:body?JSON.stringify(body):null});
+  const t=await r.text();
+  if(!r.ok) throw new Error(t);
+  return t?JSON.parse(t):[];
+}
+
+async function sbUpload(path, file){
+  const h={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type||'audio/mpeg'};
+  const r=await fetch(SB+path,{method:'POST',headers:h,body:file});
+  if(!r.ok){const t=await r.text();throw new Error(t);}
+  return true;
+}
+
+function show(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display=msg?'block':'none';}}
+function showOk(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display=msg?'block':'none';}}
+function showScreen(id){const all=document.querySelectorAll('.screen');for(let i=0;i<all.length;i++){all[i].classList.remove('active');}document.getElementById(id).classList.add('active');}
+
+function setTab(t){
+  const panes=['login','register','teacher','forgot'];
+  for(let i=0;i<panes.length;i++){
+    const el=document.getElementById('pane-'+panes[i]);
+    if(el) el.style.display=panes[i]===t?'block':'none';
+  }
+  const tabs=document.querySelectorAll('#s-login .tab');
+  const tabNames=['login','register','teacher'];
+  for(let i=0;i<tabs.length;i++){tabs[i].classList.toggle('active',tabNames[i]===t);}
+}
+
+function dashTab(t){
+  const panes=['results','sections','activities'];
+  for(let i=0;i<panes.length;i++){document.getElementById('pane-'+panes[i]).style.display=panes[i]===t?'block':'none';}
+  const tabs=document.querySelectorAll('#s-teacher .tab');
+  for(let i=0;i<tabs.length;i++){tabs[i].classList.toggle('active',panes[i]===t);}
+  if(t==='sections') loadSections();
+  if(t==='results') loadDash();
+  if(t==='activities') loadActivitiesManager();
+}
+
+async function doRegister(){
+  const name=document.getElementById('rg-name').value.trim();
+  const roll=document.getElementById('rg-roll').value.trim();
+  const code=document.getElementById('rg-code').value.trim().toUpperCase();
+  const pass=document.getElementById('rg-pass').value;
+  const pass2=document.getElementById('rg-pass2').value;
+  show('rg-err','');showOk('rg-ok','');
+  if(!name||!roll||!code||!pass){show('rg-err','Please fill in all fields.');return;}
+  if(pass!==pass2){show('rg-err','Passwords do not match.');return;}
+  if(pass.length<4){show('rg-err','Password must be at least 4 characters.');return;}
+  try{
+    const secs=await sb('/rest/v1/sections?code=eq.'+encodeURIComponent(code));
+    if(!secs||!secs.length){show('rg-err','Invalid section code. Please check with your teacher.');return;}
+    const section=secs[0].name;
+    const existing=await sb('/rest/v1/students?roll_no=eq.'+encodeURIComponent(roll));
+    if(existing&&existing.length){show('rg-err','Roll number already registered. Please sign in instead.');return;}
+    await sb('/rest/v1/students','POST',{roll_no:roll,name:name,section:section,code:code,password:pass});
+    showOk('rg-ok','Account created! You can now sign in.');
+    setTimeout(function(){setTab('login');},2000);
+  }catch(e){show('rg-err','Could not connect. Please check your internet and try again.');}
+}
+
+async function doForgotPassword(){
+  const roll=document.getElementById('fp-roll').value.trim();
+  const code=document.getElementById('fp-code').value.trim().toUpperCase();
+  const pass=document.getElementById('fp-pass').value;
+  const pass2=document.getElementById('fp-pass2').value;
+  show('fp-err','');showOk('fp-ok','');
+  if(!roll||!code||!pass){show('fp-err','Please fill in all fields.');return;}
+  if(pass!==pass2){show('fp-err','Passwords do not match.');return;}
+  if(pass.length<4){show('fp-err','Password must be at least 4 characters.');return;}
+  try{
+    const rows=await sb('/rest/v1/students?roll_no=eq.'+encodeURIComponent(roll));
+    if(!rows||!rows.length){show('fp-err','Roll number not found. Please register first.');return;}
+    if((rows[0].code||'').toUpperCase()!==code){show('fp-err','Section code does not match our records. Please check with your teacher.');return;}
+    await sb('/rest/v1/students?roll_no=eq.'+encodeURIComponent(roll),'PATCH',{password:pass});
+    showOk('fp-ok','Password reset! You can now sign in with your new password.');
+    setTimeout(function(){setTab('login');},2000);
+  }catch(e){show('fp-err','Could not connect. Please try again.');}
+}
+
+async function doLogin(){
+  const roll=document.getElementById('li-roll').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  show('li-err','');
+  if(!roll||!pass){show('li-err','Please enter your roll number and password.');return;}
+  try{
+    const rows=await sb('/rest/v1/students?roll_no=eq.'+encodeURIComponent(roll));
+    if(!rows||!rows.length){show('li-err','Roll number not found. Please register first.');return;}
+    if(rows[0].password!==pass){show('li-err','Incorrect password. Try Forgot password below.');return;}
+    await startStudent(rows[0]);
+  }catch(e){show('li-err','Could not connect. Please check your internet.');}
+}
+
+async function startStudent(st){
+  user={roll:st.roll_no,name:st.name,section:st.section,type:'student'};
+  document.getElementById('hdr-sub').textContent=st.name+' - '+st.roll_no;
+  document.getElementById('logout-btn').style.display='block';
+  showScreen('s-pick-activity');
+  await loadActivityPicker();
+}
+
+let _activityCache=[];
+
+async function loadActivityPicker(){
+  const wrap=document.getElementById('activity-pick-list');
+  wrap.innerHTML='<div class="card"><p style="font-size:13px;color:#666">Loading activities...</p></div>';
+  try{
+    const acts=await sb('/rest/v1/activities?is_active=eq.true&order=created_at.desc');
+    _activityCache=acts||[];
+    if(!acts||!acts.length){wrap.innerHTML='<div class="card"><p>No activities have been added yet. Please check back later.</p></div>';return;}
+    let html='';
+    for(let i=0;i<acts.length;i++){
+      const a=acts[i];
+      html+='<div class="card" style="cursor:pointer" onclick="openActivityByIndex('+i+')">'+
+        '<h2>'+a.title+'</h2>'+
+        '<p>'+((a.questions||[]).length)+' quiz checkpoints embedded in the audio. Speaking test included</p>'+
+        '<button class="btn btn-primary btn-sm" style="margin-top:8px">Start activity</button>'+
+      '</div>';
+    }
+    wrap.innerHTML=html;
+  }catch(e){wrap.innerHTML='<div class="card"><p style="color:#A32D2D">Could not load activities. Please try again.</p></div>';}
+}
+
+function openActivityByIndex(i){
+  currentActivity=_activityCache[i];
+  userPts=0;listenCount=0;quizResults=[];qAttempts={};
+  nextCheckpointIndex=0;gateActive=false;segmentStart=0;
+
+  const qs=currentActivity.questions||[];
+  sortedCheckpoints=[];
+  for(let i2=0;i2<qs.length;i2++){
+    sortedCheckpoints.push({qi:i2, trigger_at: qs[i2].trigger_at || 0});
+  }
+  sortedCheckpoints.sort(function(a,b){return a.trigger_at-b.trigger_at;});
+
+  document.getElementById('pts-display').style.display='inline-flex';
+  document.getElementById('pts-val').textContent='0';
+  showScreen('s-student');
+  renderIntro();
+}
+
+function doTeacherLogin(){
+  const p=document.getElementById('tc-pass').value;
+  show('tc-err','');
+  if(p!==TPASS){show('tc-err','Incorrect password. Please try again.');return;}
+  user={type:'teacher'};
+  document.getElementById('hdr-sub').textContent='Teacher dashboard';
+  document.getElementById('logout-btn').style.display='block';
+  showScreen('s-teacher');
+  loadDash();
+}
+
+function logout(){
+  user=null;userPts=0;currentActivity=null;
+  document.getElementById('pts-display').style.display='none';
+  document.getElementById('logout-btn').style.display='none';
+  document.getElementById('hdr-sub').textContent='Gamified English listening platform';
+  if(audioEl){audioEl.pause();audioEl=null;}
+  showScreen('s-login');setTab('login');
+}
+
+function addPts(n){userPts+=n;document.getElementById('pts-val').textContent=userPts;}
+function fmt(s){const m=Math.floor(s/60);const sc=Math.floor(s%60);return m+':'+(sc<10?'0':'')+sc;}
+
+function setProgress(label,pct){
+  document.getElementById('prog-label').textContent=label;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+}
+
+function renderIntro(){
+  setProgress('Getting ready',0);
+  const qs=currentActivity.questions||[];
+  const c=document.getElementById('act-content');
+  c.innerHTML='<div class="card">'+
+    '<h2>Welcome, '+user.name+'!</h2>'+
+    '<p style="margin:8px 0 1rem">Activity: <strong>'+currentActivity.title+'</strong></p>'+
+    '<ul style="font-size:14px;color:#555;line-height:2.2;margin-left:18px">'+
+    '<li>Listen to the audio passage</li>'+
+    '<li>The audio will pause automatically at '+qs.length+' point(s) for a quiz checkpoint</li>'+
+    '<li>Answer correctly to continue listening</li>'+
+    '<li>If you answer wrong, you can replay just that part of the audio again (not the whole clip)</li>'+
+    '<li>Record a spoken summary at the end</li>'+
+    '<li>Earn points and a completion badge!</li>'+
+    '</ul>'+
+    '<p style="font-size:13px;color:#666;margin:1rem 0">Quiz scoring: 10 pts (1st try), 5 pts (2nd try), 2 pts (3rd try), 0 pts after that. Speaking: up to 20 pts.</p>'+
+    '<button class="btn btn-primary" onclick="renderListening()">Begin activity</button>'+
+  '</div>';
+}
+
+function renderListening(){
+  setProgress('Listening',0);
+  const c=document.getElementById('act-content');
+  c.innerHTML='<div class="card">'+
+    '<h2>Listening activity</h2>'+
+    '<p style="margin-bottom:0.5rem">Listen carefully. The audio will pause on its own at quiz checkpoints.</p>'+
+    '<div class="audio-sec">'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+        '<button class="play-btn" onclick="togglePlay()" id="play-btn">&#9658;</button>'+
+        '<div style="flex:1">'+
+          '<input type="range" id="au-seek" min="0" max="100" value="0" disabled style="width:100%">'+
+          '<div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-top:3px">'+
+            '<span id="au-curr">0:00</span><span id="au-dur">0:00</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<p class="listen-badge">You have listened <span id="l-count">0</span> time(s)</p>'+
+      '<div id="gate-msg"></div>'+
+    '</div>'+
+    '<div class="card" style="background:#f5f5f0;margin-top:0">'+
+      '<p style="font-size:14px;font-weight:500;margin-bottom:8px">While listening, think about:</p>'+
+      '<ul style="font-size:13px;color:#555;line-height:2.2;margin-left:18px">'+
+        '<li>What is the main message of this passage?</li>'+
+        '<li>What specific advice does the speaker give?</li>'+
+        '<li>What examples or evidence are mentioned?</li>'+
+      '</ul>'+
+    '</div>'+
+    '<div id="quiz-gate-wrap"></div>'+
+  '</div>';
+  setupAudio();
+}
+
+function setupAudio(){
+  if(audioEl){audioEl.pause();audioEl=null;}
+  audioEl=new Audio(currentActivity.audio_url);
+
+  audioEl.addEventListener('timeupdate',function(){
+    const seek=document.getElementById('au-seek');
+    if(seek){
+      const p=audioEl.duration?(audioEl.currentTime/audioEl.duration)*100:0;
+      seek.value=p;
+    }
+    const curr=document.getElementById('au-curr');
+    if(curr) curr.textContent=fmt(audioEl.currentTime);
+
+    if(!gateActive && nextCheckpointIndex < sortedCheckpoints.length){
+      const cp=sortedCheckpoints[nextCheckpointIndex];
+      if(audioEl.currentTime >= cp.trigger_at){
+        triggerGate(cp);
+      }
+    }
+  });
+
+  audioEl.addEventListener('loadedmetadata',function(){
+    const d=document.getElementById('au-dur');
+    if(d) d.textContent=fmt(audioEl.duration);
+  });
+
+  audioEl.addEventListener('ended',function(){
+    const pb=document.getElementById('play-btn');
+    if(pb) pb.innerHTML='&#9658;';
+    listenCount++;
+    const lc=document.getElementById('l-count');
+    if(lc) lc.textContent=listenCount;
+    if(nextCheckpointIndex>=sortedCheckpoints.length){
+      setTimeout(renderSpeaking,800);
+    }
+  });
+
+  audioEl.currentTime = segmentStart;
+  setProgressFromCheckpoints();
+}
+
+function setProgressFromCheckpoints(){
+  const totalGates=sortedCheckpoints.length || 1;
+  const pct=Math.round((nextCheckpointIndex/totalGates)*60);
+  setProgress('Listening - checkpoint '+nextCheckpointIndex+' of '+sortedCheckpoints.length, pct);
+}
+
+function triggerGate(cp){
+  gateActive=true;
+  audioEl.pause();
+  audioEl.currentTime=cp.trigger_at;
+  document.getElementById('play-btn').disabled=true;
+  const q=currentActivity.questions[cp.qi];
+  const ak='q'+cp.qi;
+  if(!qAttempts[ak]) qAttempts[ak]=0;
+
+  renderGateQuiz(q, cp, ak);
+  document.getElementById('gate-msg').innerHTML='<div class="gate-locked">Audio paused at '+fmt(cp.trigger_at)+' - answer the question below to continue.</div>';
+}
+
+function renderGateQuiz(q, cp, ak){
+  let optsHtml='';
+  for(let i=0;i<q.options.length;i++){
+    optsHtml+='<button class="opt" id="gopt-'+i+'" onclick="checkGateAnswer('+i+','+q.correct+','+cp.qi+')">'+String.fromCharCode(65+i)+'. '+q.options[i]+'</button>';
+  }
+  const attemptNum = qAttempts[ak]+1;
+  const pointsForThisAttempt = attemptNum===1?10:(attemptNum===2?5:(attemptNum===3?2:0));
+
+  let replayHtml='';
+  if(attemptNum>1){
+    replayHtml='<button class="btn btn-sm" onclick="replaySegment('+cp.qi+')">Replay this part of the audio</button>'+
+      '<p class="replay-note">This will replay only from '+fmt(segmentStart)+' to '+fmt(cp.trigger_at)+' - not the whole clip.</p>';
+  }
+
+  document.getElementById('quiz-gate-wrap').innerHTML='<div class="quiz-overlay">'+
+    '<h3>Quiz checkpoint</h3>'+
+    '<div class="sub">Attempt '+attemptNum+' of 3 - answering correctly now earns '+pointsForThisAttempt+' points.</div>'+
+    '<div style="font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:12px">'+q.question+'</div>'+
+    '<div id="gopts-wrap">'+optsHtml+'</div>'+
+    '<div id="gq-fb" style="margin-top:8px"></div>'+
+    '<div class="row" style="margin-top:10px">'+replayHtml+'</div>'+
+  '</div>';
+}
+
+function replaySegment(qi){
+  // Replay only the audio between segmentStart and the checkpoint time
+  const cp=sortedCheckpoints[nextCheckpointIndex];
+  audioEl.currentTime=segmentStart;
+  audioEl.play();
+  document.getElementById('quiz-gate-wrap').innerHTML='<div class="quiz-overlay"><p style="font-size:13px;color:#534AB7">Replaying audio from '+fmt(segmentStart)+' to '+fmt(cp.trigger_at)+'...</p></div>';
+
+  // Listen for reaching the checkpoint again, then re-show the quiz
+  const checkReplayEnd=function(){
+    if(audioEl.currentTime >= cp.trigger_at){
+      audioEl.pause();
+      audioEl.removeEventListener('timeupdate', checkReplayEnd);
+      const q=currentActivity.questions[qi];
+      const ak='q'+qi;
+      renderGateQuiz(q, cp, ak);
+    }
+  };
+  audioEl.addEventListener('timeupdate', checkReplayEnd);
+}
+
+function checkGateAnswer(idx,correct,qi){
+  const ak='q'+qi;qAttempts[ak]=(qAttempts[ak]||0)+1;
+  const attemptNum=qAttempts[ak];
+  const opts=document.querySelectorAll('#gopts-wrap .opt');
+  for(let i=0;i<opts.length;i++){opts[i].disabled=true;}
+  const fb=document.getElementById('gq-fb');
+  const cp=sortedCheckpoints[nextCheckpointIndex];
+
+  const pointsTable=[0,10,5,2]; // index by attemptNum (1,2,3)
+  const maxAttempts=3;
+
+  if(idx===correct){
+    opts[idx].classList.add('correct');
+    const pts = pointsTable[attemptNum] || 0;
+    fb.innerHTML='<div class="fb-msg fb-good">Correct! +'+pts+' points earned. Resuming audio...</div>';
+    addPts(pts);
+    quizResults.push({qi:qi,correct:true,pts:pts,attempts:attemptNum});
+    advancePastCheckpoint(cp);
+  }else{
+    opts[idx].classList.add('wrong');
+    if(attemptNum>=maxAttempts){
+      opts[correct].classList.add('correct');
+      fb.innerHTML='<div class="fb-msg fb-bad">The correct answer is highlighted above. +0 points. Resuming audio...</div>';
+      quizResults.push({qi:qi,correct:false,pts:0,attempts:attemptNum});
+      advancePastCheckpoint(cp);
+    }else{
+      const nextAttemptPts=pointsTable[attemptNum+1];
+      fb.innerHTML='<div class="fb-msg fb-bad">Not quite. You can replay the audio segment and try again (worth '+nextAttemptPts+' points).</div>';
+      setTimeout(function(){
+        renderGateQuiz(currentActivity.questions[qi], cp, ak);
+      },1200);
+    }
+  }
+}
+
+function advancePastCheckpoint(cp){
+  nextCheckpointIndex++;
+  segmentStart = cp.trigger_at;
+  setTimeout(function(){
+    document.getElementById('quiz-gate-wrap').innerHTML='';
+    document.getElementById('gate-msg').innerHTML='';
+    gateActive=false;
+    document.getElementById('play-btn').disabled=false;
+    setProgressFromCheckpoints();
+    audioEl.currentTime=cp.trigger_at;
+    audioEl.play();
+    document.getElementById('play-btn').innerHTML='&#9612;&#9612;';
+  },1500);
+}
+
+function togglePlay(){
+  if(!audioEl||gateActive)return;
+  if(audioEl.paused){audioEl.play();document.getElementById('play-btn').innerHTML='&#9612;&#9612;';}
+  else{audioEl.pause();document.getElementById('play-btn').innerHTML='&#9658;';}
+}
+
+function renderSpeaking(){
+  setProgress('Speaking test',80);
+  const prompt=currentActivity.speaking_prompt||'Summarise what you heard in your own words.';
+  const c=document.getElementById('act-content');
+  c.innerHTML='<div class="speak-box">'+
+    '<h3>Speaking test</h3>'+
+    '<div class="sub">'+prompt+'</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<h2>Record your spoken summary</h2>'+
+    '<p style="margin-bottom:1rem">Press Record when ready. Press Stop when finished.</p>'+
+    '<div class="rec-controls">'+
+      '<button class="rec-btn start" id="r-start" onclick="startRec()">Start recording</button>'+
+      '<button class="rec-btn stop" id="r-stop" onclick="stopRec()" disabled>Stop</button>'+
+      '<span class="timer" id="r-timer">0:00</span>'+
+    '</div>'+
+    '<div id="pb-wrap" style="display:none;margin-top:1rem">'+
+      '<p style="font-size:13px;color:#555;margin-bottom:6px">Your recording:</p>'+
+      '<audio id="pb-audio" controls style="width:100%"></audio>'+
+      '<div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">'+
+        '<button class="btn btn-primary" onclick="submitSpeak()">Get AI feedback</button>'+
+        '<button class="btn" onclick="reRec()">Re-record</button>'+
+      '</div>'+
+    '</div>'+
+    '<div id="ai-fb-wrap"></div>'+
+  '</div>';
+}
+
+function renderComplete(){
+  setProgress('Complete',100);
+  const qs=currentActivity.questions||[];
+  let qs2=0;
+  for(let i=0;i<quizResults.length;i++){qs2+=quizResults[i].pts;}
+  const maxQ=qs.length*10;
+  let correctCount=0;
+  for(let i=0;i<quizResults.length;i++){if(quizResults[i].correct)correctCount++;}
+  const c=document.getElementById('act-content');
+  c.innerHTML='<div class="badge-box">'+
+    '<div class="badge-icon">&#127942;</div>'+
+    '<h3>Congratulations, '+user.name+'!</h3>'+
+    '<p>You have completed the activity and earned a badge!</p>'+
+  '</div>'+
+  '<div class="card">'+
+    '<h2>Your results</h2>'+
+    '<div class="stats-grid" style="margin-top:0.75rem">'+
+      '<div class="stat-card"><div class="num">'+userPts+'</div><div class="lbl">Total points</div></div>'+
+      '<div class="stat-card"><div class="num">'+qs2+'/'+maxQ+'</div><div class="lbl">Quiz score</div></div>'+
+      '<div class="stat-card"><div class="num">'+listenCount+'</div><div class="lbl">Times listened</div></div>'+
+      '<div class="stat-card"><div class="num">'+correctCount+'/'+qs.length+'</div><div class="lbl">Correct answers</div></div>'+
+    '</div>'+
+    '<p style="font-size:13px;color:#555;margin-top:1rem">Your results have been saved. Well done!</p>'+
+    '<button class="btn" style="margin-top:10px" onclick="backToActivities()">Back to activities</button>'+
+  '</div>';
+}
+
+function backToActivities(){
+  if(audioEl){audioEl.pause();audioEl=null;}
+  showScreen('s-pick-activity');
+  loadActivityPicker();
+}
+
+function startRec(){
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    mediaRecorder=new MediaRecorder(stream);audioChunks=[];
+    mediaRecorder.ondataavailable=function(e){audioChunks.push(e.data);};
+    mediaRecorder.onstop=function(){
+      recBlob=new Blob(audioChunks,{type:'audio/webm'});
+      document.getElementById('pb-audio').src=URL.createObjectURL(recBlob);
+      document.getElementById('pb-wrap').style.display='block';
+      stream.getTracks().forEach(function(t){t.stop();});
+    };
+    mediaRecorder.start();recSecs=0;
+    document.getElementById('r-start').disabled=true;
+    document.getElementById('r-stop').disabled=false;
+    recTimer=setInterval(function(){
+      recSecs++;document.getElementById('r-timer').textContent=fmt(recSecs);
+      if(recSecs>=120)stopRec();
+    },1000);
+  }).catch(function(){alert('Microphone access was denied. Please allow microphone access in your browser and try again.');});
+}
+function stopRec(){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();clearInterval(recTimer);document.getElementById('r-stop').disabled=true;}
+function reRec(){recBlob=null;document.getElementById('pb-wrap').style.display='none';document.getElementById('ai-fb-wrap').innerHTML='';document.getElementById('r-start').disabled=false;document.getElementById('r-timer').textContent='0:00';}
+
+async function submitSpeak(){
+  const wrap=document.getElementById('ai-fb-wrap');
+  wrap.innerHTML='<div class="ai-box"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#666"><div class="spinner"></div> Analysing your spoken summary, please wait...</div></div>';
+  try{
+    const promptText='You are an English language assessor for BTech engineering students at JNTUH, India. A student recorded a '+recSecs+'-second spoken summary after a listening activity titled "'+currentActivity.title+'". The speaking prompt was: "'+currentActivity.speaking_prompt+'".\n\nEvaluate on: fluency (1-10), vocabulary (1-10), grammar (1-10), content coverage of key ideas (1-10). Give a total speaking score out of 20.\n\nBe encouraging and constructive. Respond ONLY in this JSON format with no extra text or markdown:\n{"fluency":7,"vocabulary":6,"grammar":7,"content":6,"total":15,"feedback":"2-3 sentences of encouraging feedback.","strengths":"One specific strength","improve":"One specific thing to improve"}';
+
+    const res=await fetch('/.netlify/functions/ai-feedback',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt:promptText})
+    });
+
+    if(!res.ok){
+      const errData=await res.json().catch(function(){return {error:'Unknown error'};});
+      throw new Error(errData.error || 'Server error '+res.status);
+    }
+
+    const d=await res.json();
+    const r=JSON.parse(d.content[0].text);
+    const spPts=Math.round((r.total/20)*20);
+    addPts(spPts);
+    await saveResult({
+      roll_no:user.roll,name:user.name,section:user.section,activity_title:currentActivity.title,
+      quiz_score:(function(){let s=0;for(let i=0;i<quizResults.length;i++){s+=quizResults[i].pts;}return s;})(),
+      speaking_score:r.total,total_points:userPts,
+      listen_count:listenCount,fluency:r.fluency,vocabulary:r.vocabulary,grammar:r.grammar,
+      content_score:r.content,feedback:r.feedback,completed:true
+    });
+    wrap.innerHTML='<div class="ai-box">'+
+      '<h4 style="font-size:14px;font-weight:500;margin-bottom:10px">AI feedback on your spoken summary</h4>'+
+      '<div class="score-pills">'+
+        '<span class="pill pill-p">Fluency: '+r.fluency+'/10</span>'+
+        '<span class="pill pill-t">Vocabulary: '+r.vocabulary+'/10</span>'+
+        '<span class="pill pill-a">Grammar: '+r.grammar+'/10</span>'+
+        '<span class="pill pill-p">Content: '+r.content+'/10</span>'+
+        '<span class="pill pill-t">Speaking score: '+r.total+'/20</span>'+
+      '</div>'+
+      '<p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:10px">'+r.feedback+'</p>'+
+      '<p style="font-size:13px;margin-bottom:4px"><span style="color:#085041;font-weight:500">Strength:</span> <span style="color:#555">'+r.strengths+'</span></p>'+
+      '<p style="font-size:13px"><span style="color:#633806;font-weight:500">To improve:</span> <span style="color:#555">'+r.improve+'</span></p>'+
+      '<div style="margin-top:1rem">'+
+        '<button class="btn btn-primary" onclick="renderComplete()">See my final results</button>'+
+      '</div>'+
+    '</div>';
+  }catch(e){
+    wrap.innerHTML='<div class="ai-box"><p style="color:#A32D2D;font-size:13px">Could not get AI feedback: '+e.message+'. <button class="btn btn-sm" style="margin-left:6px" onclick="submitSpeak()">Try again</button></p></div>';
+  }
+}
+
+async function saveResult(data){
+  try{await sb('/rest/v1/student_results','POST',data);}catch(e){console.log('Save error',e);}
+}
+
+async function loadDash(){
+  try{
+    const results=await sb('/rest/v1/student_results?order=created_at.desc');
+    window._res=results;
+    const total=results.length;
+    let sumQ=0,sumS=0,passed=0;
+    for(let i=0;i<results.length;i++){
+      sumQ+=(results[i].quiz_score||0);
+      sumS+=(results[i].speaking_score||0);
+      if((results[i].quiz_score||0)>=20)passed++;
+    }
+    const avgQ=total?Math.round(sumQ/total):0;
+    const avgS=total?Math.round(sumS/total):0;
+    document.getElementById('dash-stats').innerHTML=
+      '<div class="stat-card"><div class="num">'+total+'</div><div class="lbl">Attempts completed</div></div>'+
+      '<div class="stat-card"><div class="num">'+avgQ+'</div><div class="lbl">Avg quiz score</div></div>'+
+      '<div class="stat-card"><div class="num">'+avgS+'/20</div><div class="lbl">Avg speaking score</div></div>'+
+      '<div class="stat-card"><div class="num">'+passed+'</div><div class="lbl">Passed quiz (20+)</div></div>';
+    const body=document.getElementById('res-body');
+    if(!total){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#666;padding:2rem">No student results yet.</td></tr>';return;}
+    let rowsHtml='';
+    for(let i=0;i<results.length;i++){
+      const r=results[i];
+      rowsHtml+='<tr>'+
+        '<td>'+r.roll_no+'</td><td>'+r.name+'</td><td>'+r.section+'</td><td>'+(r.activity_title||'-')+'</td>'+
+        '<td>'+(r.quiz_score||0)+'</td><td>'+(r.speaking_score||0)+'/20</td>'+
+        '<td>'+(r.total_points||0)+'</td>'+
+        '<td><span class="pass-pill '+((r.quiz_score||0)>=20?'p':'f')+'">'+((r.quiz_score||0)>=20?'Pass':'Review')+'</span></td>'+
+      '</tr>';
+    }
+    body.innerHTML=rowsHtml;
+  }catch(e){
+    document.getElementById('dash-stats').innerHTML='<div style="grid-column:1/-1"><p style="color:#A32D2D;font-size:13px">Could not load results.</p></div>';
+  }
+}
+
+async function loadSections(){
+  const list=document.getElementById('sections-list');
+  try{
+    const secs=await sb('/rest/v1/sections?order=created_at.asc');
+    if(!secs||!secs.length){list.innerHTML='<p style="font-size:14px;color:#666">No sections added yet.</p>';return;}
+    let html='';
+    for(let i=0;i<secs.length;i++){
+      const s=secs[i];
+      html+='<div class="section-row">'+
+        '<span style="flex:1;font-weight:500;font-size:14px">'+s.name+'</span>'+
+        '<span style="font-size:13px;color:#666">Code:</span>'+
+        '<span class="code-tag">'+s.code+'</span>'+
+        '<button class="btn btn-danger btn-sm" onclick="deleteSection(\''+s.id+'\',\''+s.name.replace(/'/g,"")+'\')">Delete</button>'+
+      '</div>';
+    }
+    list.innerHTML=html;
+  }catch(e){list.innerHTML='<p style="font-size:13px;color:#A32D2D">Could not load sections.</p>';}
+}
+
+async function addSection(){
+  const name=document.getElementById('sec-name').value.trim();
+  const code=document.getElementById('sec-code').value.trim().toUpperCase();
+  show('sec-err','');showOk('sec-ok','');
+  if(!name||!code){show('sec-err','Please enter both a section name and a code.');return;}
+  try{
+    const ex=await sb('/rest/v1/sections?code=eq.'+encodeURIComponent(code));
+    if(ex&&ex.length){show('sec-err','This code already exists. Please choose a different code.');return;}
+    await sb('/rest/v1/sections','POST',{name:name,code:code});
+    document.getElementById('sec-name').value='';document.getElementById('sec-code').value='';
+    showOk('sec-ok','Section added! Share the code with your students.');
+    loadSections();
+  }catch(e){show('sec-err','Could not save. Please try again.');}
+}
+
+async function deleteSection(id,name){
+  if(!confirm('Delete section "'+name+'"?'))return;
+  try{await sb('/rest/v1/sections?id=eq.'+id,'DELETE');loadSections();}
+  catch(e){alert('Could not delete. Please try again.');}
+}
+
+function addQuestionBuilder(presetQ){
+  qbCounter++;
+  const id='qb'+qbCounter;
+  const wrap=document.getElementById('qbuilder-list');
+  const div=document.createElement('div');
+  div.className='qbuilder';
+  div.id=id;
+  div.innerHTML='<button class="btn btn-sm remove-q" onclick="document.getElementById(\''+id+'\').remove()">Remove</button>'+
+    '<label>Trigger at (mm:ss in the audio, e.g. 0:35)</label>'+
+    '<input class="qb-trigger" placeholder="e.g. 0:35">'+
+    '<label>Question</label>'+
+    '<input class="qb-question" placeholder="e.g. What is the main topic discussed?">'+
+    '<label>Option A</label><input class="qb-opt-0" placeholder="Option A">'+
+    '<label>Option B</label><input class="qb-opt-1" placeholder="Option B">'+
+    '<label>Option C</label><input class="qb-opt-2" placeholder="Option C">'+
+    '<label>Option D</label><input class="qb-opt-3" placeholder="Option D">'+
+    '<label>Correct option</label>'+
+    '<select class="qb-correct"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>';
+  wrap.appendChild(div);
+  if(presetQ){
+    div.querySelector('.qb-trigger').value=presetQ.trigger_display||'';
+    div.querySelector('.qb-question').value=presetQ.question||'';
+    for(let i=0;i<presetQ.options.length;i++){div.querySelector('.qb-opt-'+i).value=presetQ.options[i];}
+    div.querySelector('.qb-correct').value=presetQ.correct;
+  }
+}
+
+function parseTimeToSeconds(str){
+  str=str.trim();
+  if(str.indexOf(':')>-1){
+    const parts=str.split(':');
+    return (parseInt(parts[0])||0)*60+(parseInt(parts[1])||0);
+  }
+  return parseFloat(str)||0;
+}
+
+async function saveActivity(){
+  const title=document.getElementById('act-title').value.trim();
+  const promptVal=document.getElementById('act-prompt').value.trim();
+  const fileInput=document.getElementById('act-audio');
+  show('act-err','');showOk('act-ok','');
+
+  if(!title){show('act-err','Please enter an activity title.');return;}
+
+  const qBuilders=document.querySelectorAll('.qbuilder');
+  const questions=[];
+  for(let i=0;i<qBuilders.length;i++){
+    const qb=qBuilders[i];
+    const triggerStr=qb.querySelector('.qb-trigger').value.trim();
+    const question=qb.querySelector('.qb-question').value.trim();
+    const opts=[];
+    for(let j=0;j<4;j++){opts.push(qb.querySelector('.qb-opt-'+j).value.trim());}
+    const correct=parseInt(qb.querySelector('.qb-correct').value);
+    let hasEmpty=false;
+    for(let j=0;j<opts.length;j++){if(!opts[j])hasEmpty=true;}
+    if(!triggerStr||!question||hasEmpty){show('act-err','Please fill in all fields, including the trigger time, for every question.');return;}
+    questions.push({question:question,options:opts,correct:correct,trigger_at:parseTimeToSeconds(triggerStr)});
+  }
+
+  const file=fileInput.files[0];
+  if(!file){show('act-err','Please select an audio file to upload.');return;}
+
+  showOk('act-ok','Uploading audio file, please wait...');
+  let audioUrl=null;
+  try{
+    const safeName=Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9.]/g,'_');
+    await sbUpload('/storage/v1/object/audio-files/'+safeName, file);
+    audioUrl=SB+'/storage/v1/object/public/audio-files/'+safeName;
+  }catch(e){show('act-err','Could not upload audio file. Please check your internet and try again.');showOk('act-ok','');return;}
+
+  try{
+    await sb('/rest/v1/activities','POST',{title:title,audio_url:audioUrl,speaking_prompt:promptVal,questions:questions,is_active:true});
+    showOk('act-ok','Activity saved successfully! Quiz checkpoints will trigger automatically at the times you set.');
+    document.getElementById('act-title').value='';
+    document.getElementById('act-prompt').value='';
+    document.getElementById('act-audio').value='';
+    document.getElementById('qbuilder-list').innerHTML='';
+    loadActivitiesManager();
+  }catch(e){show('act-err','Could not save activity. Please try again.');showOk('act-ok','');}
+}
+
+let _actManagerCache=[];
+
+async function loadActivitiesManager(){
+  const list=document.getElementById('activities-list');
+  try{
+    const acts=await sb('/rest/v1/activities?order=created_at.desc');
+    _actManagerCache=acts||[];
+    if(!acts||!acts.length){list.innerHTML='<p style="font-size:14px;color:#666">No activities added yet.</p>';return;}
+    let html='';
+    for(let i=0;i<acts.length;i++){
+      const a=acts[i];
+      const qs=a.questions||[];
+      let qList='';
+      for(let j=0;j<qs.length;j++){
+        qList+=fmt(qs[j].trigger_at||0)+' - '+qs[j].question.substring(0,40)+(qs[j].question.length>40?'...':'')+'<br>';
+      }
+      html+='<div class="activity-row">'+
+        '<div class="row" style="justify-content:space-between">'+
+          '<div>'+
+            '<div class="at">'+a.title+'</div>'+
+            '<div class="am">'+qs.length+' checkpoints - <span class="status-pill '+(a.is_active?'live':'off')+'">'+(a.is_active?'Live':'Hidden')+'</span></div>'+
+            '<div class="am" style="margin-top:6px">'+qList+'</div>'+
+          '</div>'+
+          '<div class="row">'+
+            '<button class="btn btn-sm" onclick="toggleActivityByIndex('+i+')">'+(a.is_active?'Hide':'Show')+'</button>'+
+            '<button class="btn btn-danger btn-sm" onclick="deleteActivityByIndex('+i+')">Delete</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }
+    list.innerHTML=html;
+  }catch(e){list.innerHTML='<p style="font-size:13px;color:#A32D2D">Could not load activities.</p>';}
+}
+
+async function toggleActivityByIndex(i){
+  const a=_actManagerCache[i];
+  try{await sb('/rest/v1/activities?id=eq.'+a.id,'PATCH',{is_active:!a.is_active});loadActivitiesManager();}
+  catch(e){alert('Could not update. Please try again.');}
+}
+
+async function deleteActivityByIndex(i){
+  const a=_actManagerCache[i];
+  if(!confirm('Delete activity "'+a.title+'"? This cannot be undone.'))return;
+  try{await sb('/rest/v1/activities?id=eq.'+a.id,'DELETE');loadActivitiesManager();}
+  catch(e){alert('Could not delete. Please try again.');}
+}
+
+function exportCSV(){
+  const results=window._res||[];
+  if(!results.length){alert('No student data to export yet.');return;}
+  const hdr=['Roll No','Name','Section','Activity','Quiz Score','Speaking Score','Total Points','Fluency','Vocabulary','Grammar','Listen Count','Feedback'];
+  const rows=[];
+  for(let i=0;i<results.length;i++){
+    const r=results[i];
+    rows.push([r.roll_no,r.name,r.section,r.activity_title||'',r.quiz_score||0,r.speaking_score||0,r.total_points||0,r.fluency||0,r.vocabulary||0,r.grammar||0,r.listen_count||0,'"'+(r.feedback||'').replace(/"/g,"'")+'"'].join(','));
+  }
+  const csv=[hdr.join(','),].concat(rows).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='ListenUp_Results.csv';a.click();
+}
+</script>
+</body>
+</html>
