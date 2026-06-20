@@ -796,14 +796,17 @@ async function submitSpeak(){
     const r=JSON.parse(jsonMatch[0]);
     const spPts=Math.round((r.total/20)*20);
     addPts(spPts);
-    await saveResult({
+    const resultData={
       roll_no:user.roll,name:user.name,section:user.section,activity_title:currentActivity.title,
       quiz_score:(function(){let s=0;for(let i=0;i<quizResults.length;i++){s+=quizResults[i].pts;}return s;})(),
       speaking_score:r.total,total_points:userPts,
       listen_count:listenCount,fluency:r.fluency,vocabulary:r.vocabulary,grammar:r.grammar,
       content_score:r.content,feedback:r.feedback,completed:true
-    });
-    wrap.innerHTML='<div class="ai-box">'+
+    };
+    const saved=await saveResult(resultData);
+    window._lastResultData=resultData;
+    const saveWarning=saved?'':'<div class="fb-msg fb-bad" style="margin-bottom:10px">Your feedback is shown below, but it could not be saved to the teacher\'s records due to a connection issue. <button class="btn btn-sm" onclick="retrySaveResult()">Retry saving</button></div>';
+    wrap.innerHTML=saveWarning+'<div class="ai-box">'+
       '<h4 style="font-size:14px;font-weight:500;margin-bottom:10px">AI feedback on your spoken summary</h4>'+
       '<div class="score-pills">'+
         '<span class="pill pill-p">Fluency: '+r.fluency+'/10</span>'+
@@ -824,8 +827,32 @@ async function submitSpeak(){
   }
 }
 
+async function retrySaveResult(){
+  if(!window._lastResultData){alert('Nothing to retry.');return;}
+  const saved=await saveResult(window._lastResultData);
+  if(saved){
+    alert('Saved successfully! Your result is now recorded.');
+    const warningBox=document.querySelector('.fb-bad');
+    if(warningBox) warningBox.style.display='none';
+  }else{
+    alert('Still could not save. Please check your internet connection and try again, or let your teacher know your roll number and scores manually as a backup.');
+  }
+}
+
 async function saveResult(data){
-  try{await sb('/rest/v1/student_results','POST',data);}catch(e){console.log('Save error',e);}
+  try{
+    await sb('/rest/v1/student_results','POST',data);
+    return true;
+  }catch(e){
+    console.log('Save error, retrying once...',e);
+    try{
+      await sb('/rest/v1/student_results','POST',data);
+      return true;
+    }catch(e2){
+      console.log('Save error on retry, giving up.',e2);
+      return false;
+    }
+  }
 }
 
 async function loadDash(){
