@@ -110,6 +110,7 @@ audio{border-radius:8px}
   </div>
   <div class="row">
     <span class="pts-badge" id="pts-display" style="display:none">&#9733; <span id="pts-val">0</span> pts</span>
+    <button class="btn btn-sm" id="back-activities-btn" style="display:none" onclick="confirmBackToActivities()">Back to activities</button>
     <button class="btn btn-sm" id="logout-btn" style="display:none" onclick="logout()">Sign out</button>
   </div>
 </div>
@@ -423,8 +424,15 @@ function openActivityByIndex(i){
 
   document.getElementById('pts-display').style.display='inline-flex';
   document.getElementById('pts-val').textContent='0';
+  document.getElementById('back-activities-btn').style.display='inline-block';
   showScreen('s-student');
   renderIntro();
+}
+
+function confirmBackToActivities(){
+  if(confirm('Leave this activity and go back to the activities list? Your progress on this attempt will not be saved unless you finish the speaking test.')){
+    backToActivities();
+  }
 }
 
 function doTeacherLogin(){
@@ -442,6 +450,7 @@ function logout(){
   user=null;userPts=0;currentActivity=null;
   document.getElementById('pts-display').style.display='none';
   document.getElementById('logout-btn').style.display='none';
+  document.getElementById('back-activities-btn').style.display='none';
   document.getElementById('hdr-sub').textContent='Gamified English listening platform';
   if(audioEl){audioEl.pause();audioEl=null;}
   showScreen('s-login');setTab('login');
@@ -540,8 +549,15 @@ function setupAudio(){
     listenCount++;
     const lc=document.getElementById('l-count');
     if(lc) lc.textContent=listenCount;
-    if(nextCheckpointIndex>=sortedCheckpoints.length){
+    // Only move to speaking if all checkpoints are answered AND no gate quiz is currently active.
+    // This prevents the audio's natural end from interrupting an unanswered quiz gate.
+    if(nextCheckpointIndex>=sortedCheckpoints.length && !gateActive){
       setTimeout(renderSpeaking,800);
+    } else if(nextCheckpointIndex<sortedCheckpoints.length && !gateActive){
+      // Audio reached its end but there are still unanswered checkpoints (e.g. last
+      // checkpoint sits very close to the end of the clip). Force the gate now
+      // instead of silently letting the audio finish.
+      triggerGate(sortedCheckpoints[nextCheckpointIndex]);
     }
   });
 
@@ -693,6 +709,9 @@ function renderSpeaking(){
       '</div>'+
     '</div>'+
     '<div id="ai-fb-wrap"></div>'+
+    '<div style="margin-top:1.5rem;border-top:1px solid #e5e5e0;padding-top:1rem">'+
+      '<button class="btn" onclick="backToActivities()">Back to activities list</button>'+
+    '</div>'+
   '</div>';
 }
 
@@ -755,7 +774,7 @@ async function submitSpeak(){
   const wrap=document.getElementById('ai-fb-wrap');
   wrap.innerHTML='<div class="ai-box"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#666"><div class="spinner"></div> Analysing your spoken summary, please wait...</div></div>';
   try{
-    const promptText='You are an English language assessor for BTech engineering students at JNTUH, India. A student recorded a '+recSecs+'-second spoken summary after a listening activity titled "'+currentActivity.title+'". The speaking prompt was: "'+currentActivity.speaking_prompt+'".\n\nEvaluate on: fluency (1-10), vocabulary (1-10), grammar (1-10), content coverage of key ideas (1-10). Give a total speaking score out of 20.\n\nBe encouraging and constructive. Respond ONLY in this JSON format with no extra text or markdown:\n{"fluency":7,"vocabulary":6,"grammar":7,"content":6,"total":15,"feedback":"2-3 sentences of encouraging feedback.","strengths":"One specific strength","improve":"One specific thing to improve"}';
+    const promptText='You are an English language assessor for BTech engineering students at JNTUH, India. A student recorded a '+recSecs+'-second spoken summary after a listening activity titled "'+currentActivity.title+'". The speaking prompt was: "'+currentActivity.speaking_prompt+'".\n\nEvaluate on: fluency (1-10), vocabulary (1-10), grammar (1-10), content coverage of key ideas (1-10). Give a total speaking score out of 20.\n\nBe encouraging and constructive. Your entire reply must be ONLY the JSON object below, with absolutely no introductory text, no closing remarks, no markdown code fences, and nothing before the opening brace or after the closing brace:\n{"fluency":7,"vocabulary":6,"grammar":7,"content":6,"total":15,"feedback":"2-3 sentences of encouraging feedback.","strengths":"One specific strength","improve":"One specific thing to improve"}';
 
     const res=await fetch('/.netlify/functions/ai-feedback',{
       method:'POST',
@@ -769,7 +788,12 @@ async function submitSpeak(){
     }
 
     const d=await res.json();
-    const r=JSON.parse(d.content[0].text);
+    const rawText=d.content[0].text;
+    // Claude sometimes adds a sentence before/after the JSON despite instructions.
+    // Extract just the {...} block so parsing doesn't fail.
+    const jsonMatch=rawText.match(/\{[\s\S]*\}/);
+    if(!jsonMatch){throw new Error('AI response did not contain valid JSON. Raw response: '+rawText.substring(0,150));}
+    const r=JSON.parse(jsonMatch[0]);
     const spPts=Math.round((r.total/20)*20);
     addPts(spPts);
     await saveResult({
