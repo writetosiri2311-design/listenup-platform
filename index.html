@@ -611,6 +611,7 @@ function renderGateQuiz(q, cp, ak){
 function replaySegment(qi){
   // Replay only the audio between segmentStart and the checkpoint time
   const cp=sortedCheckpoints[nextCheckpointIndex];
+  listenCount++;
   audioEl.currentTime=segmentStart;
   audioEl.play();
   document.getElementById('quiz-gate-wrap').innerHTML='<div class="quiz-overlay"><p style="font-size:13px;color:#534AB7">Replaying audio from '+fmt(segmentStart)+' to '+fmt(cp.trigger_at)+'...</p></div>';
@@ -802,7 +803,7 @@ async function submitSpeak(){
       quiz_score:(function(){let s=0;for(let i=0;i<quizResults.length;i++){s+=quizResults[i].pts;}return s;})(),
       speaking_score:r.total,total_points:userPts,
       listen_count:listenCount,fluency:r.fluency,vocabulary:r.vocabulary,grammar:r.grammar,
-      content_score:r.content,feedback:r.feedback,completed:true
+      content_score:r.content,feedback:r.feedback,completed:true,checkpoint_attempts:qAttempts
     };
     const saved=await saveResult(resultData);
     window._lastResultData=resultData;
