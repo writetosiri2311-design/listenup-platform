@@ -773,6 +773,7 @@ function reRec(){recBlob=null;document.getElementById('pb-wrap').style.display='
 async function submitSpeak(){
   const wrap=document.getElementById('ai-fb-wrap');
   wrap.innerHTML='<div class="ai-box"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#666"><div class="spinner"></div> Analysing your spoken summary, please wait...</div></div>';
+  await new Promise(function(r){setTimeout(r, Math.random()*3000);});
   try{
     const promptText='You are an English language assessor for BTech engineering students at JNTUH, India. A student recorded a '+recSecs+'-second spoken summary after a listening activity titled "'+currentActivity.title+'". The speaking prompt was: "'+currentActivity.speaking_prompt+'".\n\nEvaluate on: fluency (1-10), vocabulary (1-10), grammar (1-10), content coverage of key ideas (1-10). Give a total speaking score out of 20.\n\nBe encouraging and constructive. Your entire reply must be ONLY the JSON object below, with absolutely no introductory text, no closing remarks, no markdown code fences, and nothing before the opening brace or after the closing brace:\n{"fluency":7,"vocabulary":6,"grammar":7,"content":6,"total":15,"feedback":"2-3 sentences of encouraging feedback.","strengths":"One specific strength","improve":"One specific thing to improve"}';
 
